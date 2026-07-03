@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다가치 (Da-gachi) - 우리 동네 다국어 가이드</title>
+    <style>
+        /* [ 디자인 ] 하얀색 기본에 부드러운 녹차색 포인트 */
+        :root {
+            --bg-color: #ffffff;
+            --primary-green: #8eb695; /* 부드러운 녹차색 */
+            --dark-green: #6a9171; /* 호버용 약간 진한 녹차색 */
+            --light-green: #f3f8f4; /* 아주 연한 녹차색 배경 */
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(142, 182, 149, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Intro Screen (1번 화면) --- */
+        #introScreen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: var(--light-green);
+        }
+
+        .intro-logo {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro-desc {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .lang-select-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .lang-select-container h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            font-size: 1.2rem;
+        }
+
+        #mainLangSelect {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            outline: none;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        #mainLangSelect:focus {
+            border-color: var(--primary-green);
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-start:hover {
+            background-color: var(--dark-green);
+        }
+
+        /* --- Main Screen (2번 화면) --- */
+        #mainScreen {
+            display: none; /* 초기에는 숨김 */
+            flex: 1;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        /* Location Section */
+        .location-card {
+            background-color: var(--light-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .location-card h2 {
+            color: var(--dark-green);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .btn-location {
+            background-color: var(--primary-green);
+            color: white;
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-location:hover {
+            background-color: var(--dark-green);
+        }
+
+        /* Rules Section */
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--light-green);
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (min-width: 600px) {
+            .rules-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .rule-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+
+        .rule-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-green);
+        }
+
+        .rule-card h3 {
+            color: var(--dark-green);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Community Section */
+        .community-area {
+            background-color: #fafafa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-green);
+        }
+
+        .btn-submit {
+            align-self: flex-end;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--dark-green);
+        }
+
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .post-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .post-item.ai-reply {
+            background-color: var(--light-green);
+            border-color: var(--primary-green);
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .post-item.ai-reply::before {
+            content: "↳";
+            position: absolute;
+            left: -15px;
+            top: 15px;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+
+        .post-author.ai {
+            color: #d97706; /* AI를 구분하는 색상 */
+        }
+
+        .post-time {
+            color: var(--text-muted);
+        }
+
+        /* Toast Message */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1번 화면: 언어 선택창 -->
+    <div id="introScreen">
+        <div class="intro-logo">
+            <span>🌿</span>
+            <span>다가치 (Da-gachi)</span>
+        </div>
+        <p class="intro-desc">우리 동네 다국어 생활 가이드 및 소통 공간</p>
+        
+        <div class="lang-select-container">
+            <h2>언어를 선택해주세요<br><small style="font-weight:normal; font-size:0.9rem; color:#666;">Please select your language</small></h2>
+            <select id="mainLangSelect">
+                <option value="ko">🇰🇷 한국어</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="vi">🇻🇳 Tiếng Việt</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="th">🇹🇭 ไทย</option>
+                <option value="id">🇮🇩 Bahasa Indonesia</option>
+                <option value="tl">🇵🇭 Tagalog</option>
+                <option value="uz">🇺🇿 O'zbek</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="ne">🇳🇵 नेपाली</option>
+            </select>
+            <button class="btn-start" onclick="startApp()">시작하기 / Start</button>
+        </div>
+    </div>
+
+    <!-- 2번 화면: 소통과 정보창 -->
+    <div id="mainScreen">
+        <header>
+            <div class="logo" onclick="goBackToIntro()">
+                🌿 <span data-i18n="app_title">다가치</span>
+            </div>
+            <button class="btn-small" onclick="goBackToIntro()" data-i18n="btn_change_lang">언어 변경</button>
+        </header>
+
+        <main>
+            <!-- 3. 위치 기반 동네 설정 -->
+            <section class="location-card">
+                <h2 data-i18n="loc_title">📍 내 동네 설정</h2>
+                <p id="locationText" data-i18n="loc_desc">동네를 설정하면 지역 맞춤 정보를 볼 수 있습니다.</p>
+                <button class="btn-location" onclick="getLocation()" data-i18n="loc_btn">현재 위치로 동네 찾기</button>
+            </section>
+
+            <!-- 생활 규칙 안내 -->
+            <h2 class="section-title" data-i18n="rule_header">📌 꼭 알아야 할 동네 생활 규칙</h2>
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <h3 data-i18n="rule1_title">🗑️ 쓰레기 분리배출</h3>
+                    <p data-i18n="rule1_desc">일반 쓰레기는 지정된 종량제 봉투에 담고, 재활용품은 분리하여 해가 진 후 배출해주세요. 무단 투기 시 과태료가 부과됩니다.</p>
+                </div>
+                <div class="rule-card">
+                    <h3 data-i18n="rule2_title">🤫 층간 소음 예방</h3>
+                    <p data-i18n="rule2_desc">한국의 다세대 주택은 소음에 취약할 수 있습니다. 밤 10시 이후에는 세탁기 사용이나 큰 소리로 대화하는 것을 자제해 주세요.</p>
+                </div>
+            </div>
+
+            <!-- 소통 게시판 (AI 답변 기능 포함) -->
+            <section class="community-area">
+                <h2 class="section-title" data-i18n="comm_header">💬 이웃 소통 게시판 (AI 도우미 대기 중)</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;" data-i18n="comm_guideline">
+                    궁금한 점을 질문하시면 AI 도우미가 올바른 정보를 찾아 답변해 드립니다!
+                </p>
+                
+                <div class="post-input-group">
+                    <textarea id="postContent" data-i18n-placeholder="comm_placeholder" placeholder="질문을 남겨보세요. 예: 쓰레기는 언제 버리나요?"></textarea>
+                    <button class="btn-submit" onclick="submitPost()" data-i18n="comm_btn">질문 남기기</button>
+                </div>
+
+                <div class="post-list" id="postList">
+                    <!-- 기본 게시글 예시 -->
+                    <div class="post-item">
+                        <div class="post-header">
+                            <span class="post-author">관리자 (Admin)</span>
+                            <span class="post-time">1시간 전</span>
+                        </div>
+                        <p>안녕하세요! 무엇이든 물어보시면 AI 도우미가 답변을 도와드립니다. 😊</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast">메시지</div>
+
+    <script>
+        // 다국어 및 AI 답변 데이터
+        const translations = {
+            ko: {
+                app_title: "다가치",
+                btn_change_lang: "언어 변경",
+                loc_title: "📍 내 동네 설정",
+                loc_desc: "동네를 설정하면 지역 맞춤 정보를 볼 수 있습니다.",
+                loc_btn: "현재 위치로 동네 찾기",
+                loc_success: "현재 위치가 '경기도 수원시'로 설정되었습니다!",
+                loc_error: "위치를 가져올 수 없습니다. 권한을 확인해주세요.",
+                rule_header: "📌 꼭 알아야 할 동네 생활 규칙",
+                rule1_title: "🗑️ 쓰레기 분리배출",
+                rule1_desc: "일반 쓰레기는 지정된 종량제 봉투에 담고, 재활용품은 분리하여 해가 진 후 배출해주세요. 무단 투기 시 과태료가 부과됩니다.",
+                rule2_title: "🤫 층간 소음 예방",
+                rule2_desc: "한국의 다세대 주택은 소음에 취약할 수 있습니다. 밤 10시 이후에는 세탁기 사용이나 큰 소리로 대화하는 것을 자제해 주세요.",
+                comm_header: "💬 이웃 소통 게시판",
+                comm_guideline: "궁금한 점을 질문하시면 AI 도우미가 올바른 정보를 찾아 답변해 드립니다!",
+                comm_placeholder: "질문을 남겨보세요. 예: 쓰레기는 언제 버리나요?",
+                comm_btn: "질문 남기기",
+                comm_empty_warn: "내용을 입력해주세요.",
+                comm_bad_word: "⚠️ 타인을 불쾌하게 할 수 있는 표현이 포함되어 등록할 수 없습니다.",
+                // AI 답변 데이터
+                ai_name: "🤖 AI 도우미",
+                ai_waste: "안녕하세요! 쓰레기 배출에 대해 문의하셨군요. 종량제 봉투는 근처 편의점이나 마트에서 구매할 수 있으며, 배출 시간은 보통 해가 진 후(저녁 8시~자정)입니다. 동네마다 수거 요일이 다르니 지정된 요일을 확인해 주세요!",
+                ai_noise: "층간 소음과 관련된 질문이군요. 밤 10시부터 새벽 6시까지는 이웃의 수면을 위해 청소기, 세탁기 사용이나 큰 소리를 자제하는 것이 한국의 기본적인 공동주택 예절입니다.",
+                ai_default: "질문을 남겨주셔서 감사합니다. 이웃 주민들이나 관리자가 곧 확인하고 도움을 드릴 것입니다. 좋은 하루 보내세요!"
+            },
+            en: {
+                app_title: "Da-gachi",
+                btn_change_lang: "Change Language",
+                loc_title: "📍 Set Neighborhood",
+                loc_desc: "Set your location to see customized local info.",
+                loc_btn: "Find location",
+                loc_success: "Location set to 'Suwon-si, Gyeonggi-do'!",
+                loc_error: "Cannot get location. Please check permissions.",
+                rule_header: "📌 Essential Local Rules",
+                rule1_title: "🗑️ Waste Separation",
+                rule1_desc: "Use standard bags for general waste. Take them out after sunset. Fines apply for illegal dumping.",
+                rule2_title: "🤫 Noise Prevention",
+                rule2_desc: "Please refrain from using washing machines or talking loudly after 10 PM.",
+                comm_header: "💬 Q&A Board",
+                comm_guideline: "Ask any questions and our AI assistant will provide correct information!",
+                comm_placeholder: "Ask a question. e.g., When should I take out the trash?",
+                comm_btn: "Post Question",
+                comm_empty_warn: "Please enter your message.",
+                comm_bad_word: "⚠️ Contains inappropriate expressions.",
+                // AI Answers
+                ai_name: "🤖 AI Assistant",
+                ai_waste: "Hello! Regarding your waste disposal question: You can buy standard garbage bags at convenience stores. Disposal time is usually after sunset (8 PM - Midnight). Please check specific collection days for your neighborhood!",
+                ai_noise: "Regarding your question about noise: In Korea, it is common courtesy in multi-family housing to refrain from using vacuum cleaners, washing machines, or making loud noises between 10 PM and 6 AM.",
+                ai_default: "Thank you for your question. A neighbor or admin will help you shortly. Have a great day!"
+            },
+            vi: {
+                app_title: "Da-gachi",
+                btn_change_lang: "Đổi ngôn ngữ",
+                loc_title: "📍 Thiết lập khu vực",
+                loc_desc: "Thiết lập vị trí để xem thông tin địa phương.",
+                loc_btn: "Tìm khu vực",
+                loc_success: "Vị trí đã được đặt thành 'Suwon-si, Gyeonggi-do'!",
+                loc_error: "Không thể lấy vị trí. Vui lòng kiểm tra quyền.",
+                rule_header: "📌 Quy tắc khu phố cần biết",
+                rule1_title: "🗑️ Phân loại rác",
+                rule1_desc: "Sử dụng túi rác tiêu chuẩn. Đổ rác sau khi mặt trời lặn. Sẽ bị phạt nếu đổ rác bừa bãi.",
+                rule2_title: "🤫 Phòng chống tiếng ồn",
+                rule2_desc: "Vui lòng hạn chế dùng máy giặt hoặc làm ồn sau 10 giờ tối.",
+                comm_header: "💬 Bảng Hỏi Đáp",
+                comm_guideline: "Hãy đặt câu hỏi và Trợ lý AI sẽ cung cấp thông tin chính xác!",
+                comm_placeholder: "Đặt câu hỏi. VD: Khi nào tôi nên đổ rác?",
+                comm_btn: "Đăng câu hỏi",
+                comm_empty_warn: "Vui lòng nhập nội dung.",
+                comm_bad_word: "⚠️ Chứa từ ngữ không phù hợp.",
+                // AI Answers
+                ai_name: "🤖 Trợ lý AI",
+                ai_waste: "Xin chào! Về câu hỏi vứt rác của bạn: Bạn có thể mua túi rác tiêu chuẩn ở cửa hàng tiện lợi. Thời gian đổ rác thường là sau khi mặt trời lặn (8 tối - nửa đêm). Vui lòng kiểm tra ngày thu gom cụ thể ở khu vực của bạn!",
+                ai_noise: "Về vấn đề tiếng ồn: Tại Hàn Quốc, phép lịch sự cơ bản ở chung cư là tránh dùng máy hút bụi, máy giặt hoặc làm ồn từ 10 giờ tối đến 6 giờ sáng.",
+                ai_default: "Cảm ơn câu hỏi của bạn. Hàng xóm hoặc quản trị viên sẽ giúp bạn sớm. Chúc một ngày tốt lành!"
+            }
+        };
+
+        let currentLang = 'ko';
+
+        // 1. 화면 전환: 시작하기 버튼 클릭
+        function startApp() {
+            const select = document.getElementById('mainLangSelect');
+            currentLang = select.value;
+            applyLanguage(currentLang);
+            
+            // 화면 전환
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('mainScreen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // 언어 선택창으로 돌아가기
+        function goBackToIntro() {
+            document.getElementById('mainScreen').style.display = 'none';
+            document.getElementById('introScreen').style.display = 'flex';
+        }
+
+        // 다국어 적용
+        function applyLanguage(lang) {
+            const dict = translations[lang] || translations['en'];
+
+            // 일반 텍스트 변경
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+
+            // Placeholder 텍스트 변경
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (dict[key]) {
+                    el.placeholder = dict[key];
+                }
+            });
+        }
+
+        // 위치 확인
+        function getLocation() {
+            const locationText = document.getElementById('locationText');
+            const dict = translations[currentLang] || translations['en'];
+
+            locationText.innerText = "...";
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationText.innerHTML = `<strong>✅ ${dict.loc_success}</strong>`;
+                        locationText.style.color = "var(--primary-green)";
+                    },
+                    (error) => {
+                        showToast(dict.loc_error);
+                        locationText.innerText = dict.loc_error;
+                    }
+                );
+            } else {
+                showToast("Geolocation is not supported.");
+            }
+        }
+
+        // 시간 포맷팅 함수
+        function getTimeString() {
+            const now = new Date();
+            return `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        // 게시판 글쓰기
+        function submitPost() {
+            const textarea = document.getElementById('postContent');
+            const content = textarea.value.trim();
+            const dict = translations[currentLang] || translations['en'];
+
+            if (!content) {
+                showToast(dict.comm_empty_warn);
+                return;
+            }
+
+            // 필터링
+            const badWords = ['바보', '멍청이', '꺼져', 'idiot', 'stupid']; 
+            for (let word of badWords) {
+                if (content.toLowerCase().includes(word)) {
+                    showToast(dict.comm_bad_word);
+                    return;
+                }
+            }
+
+            // 사용자 게시글 추가
+            addPostToDOM("새로운 이웃 (You)", content, false);
+            textarea.value = '';
+            
+            // 버튼 일시 비활성화
+            const btn = document.querySelector('.btn-submit');
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+
+            // AI 답변 생성 (모의 지연 1.5초)
+            setTimeout(() => {
+                generateAIReply(content, dict);
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }, 1500);
+        }
+
+        // AI 답변 로직
+        function generateAIReply(userContent, dict) {
+            let replyContent = dict.ai_default;
+            const contentLower = userContent.toLowerCase();
+
+            // 간단한 키워드 매칭
+            if (contentLower.includes('쓰레기') || contentLower.includes('버리') || contentLower.includes('종량제') || contentLower.includes('waste') || contentLower.includes('trash') || contentLower.includes('rác')) {
+                replyContent = dict.ai_waste;
+            } else if (contentLower.includes('소음') || contentLower.includes('시끄') || contentLower.includes('noise') || contentLower.includes('loud') || contentLower.includes('ồn')) {
+                replyContent = dict.ai_noise;
+            }
+
+            addPostToDOM(dict.ai_name, replyContent, true);
+        }
+
+        // DOM에 게시글 추가
+        function addPostToDOM(author, content, isAI) {
+            const postList = document.getElementById('postList');
+            const newPost = document.createElement('div');
+            newPost.className = isAI ? 'post-item ai-reply' : 'post-item';
+            
+            const authorClass = isAI ? 'post-author ai' : 'post-author';
+
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <span class="${authorClass}">${author}</span>
+                    <span class="post-time">${getTimeString()}</span>
+                </div>
+                <p>${content}</p>
+            `;
+
+            // 새 글을 맨 위에 추가
+            postList.insertBefore(newPost, postList.firstChild);
+        }
+
+        // 토스트 알림
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = 'show';
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
